@@ -1,0 +1,73 @@
+<div class="container mt-3">
+  <!-- Add Device Form -->
+  <div class="row ">
+    <div class="col-12">
+      <div class="card rounded-3">
+        <div class="card-header bg-dark-subtle">
+          <h4 class="fw-bold">Manage Device</h4>
+        </div>
+        <div class="card-body">
+          
+          <form (ngSubmit)="addDevice()" class="row g-4">
+
+            <div class="col-12 col-md-5  mb-3">
+              <label for="deviceName" class="form-label">Device Name</label>
+              <input type="text" class="form-control" id="deviceName" [(ngModel)]="newDevice.name" name="deviceName" placeholder="Enter Device Name" required />
+            </div>
+
+            <div class="col-12 col-md-5 mb-3">
+              <label for="status" class="form-label">Device Type</label>
+              <select class="form-control" id="status" [(ngModel)]="newDevice.type" name="deviceType" required>
+                <option value="" disabled selected> Select Device Type</option>
+                <option value="Temperature">Temperature</option>
+                <option value="Humidity">Humidity</option>
+                <option value="Motion">Motion</option>
+              </select>
+            </div>
+
+            <div class="col-md-2 col-sm-12 mb-3  d-flex align-items-end ">
+              <button type="submit" class="btn btn-primary w-100">Add Device</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Device Table -->
+  <div class="table-responsive mt-5 rounded-3 border-3">
+
+    <table class="table table-bordered text-center ">
+
+      <thead class="table-secondary">
+        <tr>
+          <th>ID</th>
+          <th>Device Name</th>
+          <th>Device Type</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let device of devices">
+          <td>{{ device.id }}</td>
+          <td>{{ device.name }}</td>
+          <td>{{ device.type }}</td>
+          <td>{{ device.status }}</td>
+          <td>
+            <button class="btn fa-xl" [ngClass]="{'text-danger': device.status === 'active','text-success': device.status === 'inactive'}" (click)="toggleDeviceStatus(device)">
+              <i class="fa-solid" [ngClass]="{'fa-pause': device.status === 'active','fa-play': device.status === 'inactive'}"></i>
+            </button>
+            <button class="btn text-primary" [routerLink]="['/edit_device',device.id]">
+              <i class="fa-solid fa-pen-to-square fa-xl"></i>
+            </button>
+            <button class="btn text-danger" (click)="deleteDevice(device.id)">
+              <i class="fa-solid fa-trash fa-xl"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

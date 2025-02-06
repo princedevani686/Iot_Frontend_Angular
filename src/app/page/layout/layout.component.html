@@ -1,0 +1,61 @@
+<div>
+  <div id="sidebar" class="" [class.active]="isSidebarActive">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white vh-100">
+      <a href="/dashboard" class="d-flex mb-md-0 me-md-auto text-white text-decoration-none">
+        <p class="fs-4 mx-3 mb-0"> <span class="text-primary fw-bold h2">IoT</span> Device</p>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item mb-3">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link text-white">
+            <i class="fa-solid fa-house px-2"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item mb-3">
+          <a routerLink="/device" class="nav-link text-white" routerLinkActive="active">
+            <i class="fa-solid fa-gear px-2"></i>
+            Manage Devices
+          </a>
+        </li>
+        <li class="nav-item mb-3">
+          <a routerLink="/report" class="nav-link text-white" routerLinkActive="active">
+            <i class="fa-solid fa-file-lines px-2"></i>
+            Generate Reports
+          </a>
+        </li>
+
+        <li class="nav-item mb-3">
+          <a routerLink="#" class="nav-link text-white" (click)="onLogout()" routerLinkActive="active">
+            <i class="fa-solid fa-right-from-bracket px-2"></i>
+            LogOut
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="page-content-wrapper" [class.sidebar-active]="isSidebarActive">
+    <div class="toggle d-flex justify-content-between align-items-center w-100">
+      <button id="toggleSidebar" class="btn" (click)="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+
+      <div class="d-flex justify-content-end align-items-center text-dark me-3 bg-light rounded-pill p-2 m-2">
+        <i class="fa-solid fa-circle-user m-1 fa-xl"></i>
+        <span class="d-none mb-1 d-sm-inline">{{ username }}</span> <!-- Hide on extra small screens -->
+      </div>
+      
+      
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+
+
+</div>

@@ -1,0 +1,118 @@
+<div class="container mt-5">
+  <div class="form-toggle d-flex justify-content-center">
+    <button 
+      class="toggle-btn btn btn-outline-primary mx-2" 
+      [class.active]="activeForm === 'login'" 
+      (click)="toggleForm('login')">Login</button>
+    <button 
+      class="toggle-btn btn btn-outline-primary mx-2" 
+      [class.active]="activeForm === 'register'" 
+      (click)="toggleForm('register')">Register</button>
+  </div>
+
+  <!-- Login Form -->
+  <form *ngIf="activeForm === 'login'" (ngSubmit)="loginForm()" class="form card p-4 shadow">
+    <h2 class="text-center">Login</h2>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        [(ngModel)]="loginObj.email" 
+        name="email" 
+        class="form-control"
+        required 
+        placeholder="Enter your email">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        [(ngModel)]="loginObj.password" 
+        name="password" 
+        class="form-control"
+        required 
+        placeholder="Enter your password">
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+    <p class="mt-2 text-center">
+      <a class="text-primary" (click)="toggleForm('forgot-password')">Forgot Password?</a>
+    </p>
+    <p class="mb-0 text-center">
+      Don't have an account?
+      <a class="text-primary" (click)="toggleForm('register')">Register here</a>
+    </p>
+  </form>
+
+  <!-- Register Form -->
+  <form *ngIf="activeForm === 'register'" (ngSubmit)="registerForm()" class="form card p-4 shadow">
+    <h2 class="text-center">Register</h2>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input 
+        type="text" 
+        id="username" 
+        [(ngModel)]="registerObj.username" 
+        name="username" 
+        class="form-control"
+        required 
+        placeholder="Enter your username">
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        [(ngModel)]="registerObj.email" 
+        name="email" 
+        class="form-control"
+        required 
+        placeholder="Enter your email">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        [(ngModel)]="registerObj.password" 
+        name="password" 
+        class="form-control"
+        required 
+        placeholder="Enter your password">
+    </div>
+    <div class="form-group">
+      <label for="password2">Confirm Password</label>
+      <input 
+        type="password" 
+        id="password2" 
+        [(ngModel)]="registerObj.password2" 
+        name="password2" 
+        class="form-control"
+        required 
+        placeholder="Confirm your password">
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
+  </form>
+
+  <!-- Forgot Password Form -->
+  <form *ngIf="activeForm === 'forgot-password'" (ngSubmit)="forgotPassword()" class="form card p-4 shadow">
+    <h2 class="text-center">Forgot Password</h2>
+    <div class="form-group">
+      <label for="forgot-email">Enter your email</label>
+      <input 
+        type="email" 
+        id="forgot-email" 
+        [(ngModel)]="forgotObj.email" 
+        name="forgotEmail" 
+        class="form-control"
+        required 
+        placeholder="Enter your email">
+    </div>
+    <button type="submit" class="btn btn-primary w-100 mt-3">Reset Password</button>
+    <p class="mt-2 text-center">
+      Remembered your password? 
+      <a class="text-primary" (click)="toggleForm('login')">Login here</a>
+    </p>
+  </form>
+</div>

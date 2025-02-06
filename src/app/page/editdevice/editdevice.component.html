@@ -1,0 +1,45 @@
+<div class="container mt-3">
+  <!-- Add Device Form -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card  rounded-3">
+        <div class="card-header bg-dark-subtle d-flex justify-content-between">
+          <h4 class="fw-bold">Update Devices</h4>
+          <button class="btn btn-light" (click)="onCancel()">Back &nbsp;<i class="fa fa-arrow-left"></i></button>
+        </div>
+        <div class="card-body ">
+          <form *ngIf="device" (ngSubmit)="onUpdateDevice()" class="row g-4">
+            <div class=" col-12 col-md-5 mb-3">
+              <label for="deviceName">Device Name</label>
+              <input type="text" id="deviceName" [(ngModel)]="device.name" name="name" class="form-control" required />
+            </div>
+
+
+            <div class="col-12 col-md-5 mb-3">
+              <label for="deviceType" class="form-label">Device Type</label>
+              <select class="form-control" id="deviceType" [(ngModel)]="device.type" name="type" required>
+                <option value="" disabled selected>Select Device Type</option>
+                <option value="Temperature">Temperature</option>
+                <option value="Humidity">Humidity</option>
+                <option value="Motion">Motion</option>
+              </select>
+            </div>
+
+               
+            <div class="col-md-2 col-sm-12 mb-3  d-flex align-items-end">
+              
+                <button type="submit" class="btn btn-primary  w-100">Save Changes</button>
+              
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+ 
+
+  
+</div>

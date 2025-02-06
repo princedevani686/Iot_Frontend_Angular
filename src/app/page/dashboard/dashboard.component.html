@@ -1,0 +1,50 @@
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="card rounded-3">
+        <div class="card-header bg-dark-subtle">
+          <h4 class="fw-bold">Dashboard</h4>
+        </div>
+        <div class="card-body">
+          <div class="row justify-content-center">
+            <div class="col-md-5 col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="deviceSelect">Select Device:</label>
+                <select id="deviceSelect" [(ngModel)]="selectedDevice" class="form-control">
+                  <option value="" disabled>Select a device</option>
+                  <option *ngFor="let device of devices" [value]="device.id">{{ device.name }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-5 col-sm-12 mb-3">
+              <div class="form-group">
+                <label for="rangeSelect">Select Time Range:</label>
+                <select id="rangeSelect" [(ngModel)]="selectedRange" class="form-control">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-2 col-sm-12 mb-3 d-flex align-items-end">
+              <button (click)="generateReport()" class="btn btn-primary w-100">Show Data</button>
+            </div>
+          </div>
+
+          <ng-template #noData>
+            <p>No data available</p>
+          </ng-template>
+
+          <!-- Responsive Chart Container -->
+          <div class="chart-container">
+            <canvas id="lineChart"></canvas>
+            
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
