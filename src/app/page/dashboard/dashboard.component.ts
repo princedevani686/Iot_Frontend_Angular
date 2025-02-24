@@ -3,7 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +15,7 @@ import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
 export class DashboardComponent implements OnInit, OnDestroy {
   devices: any[] = [];
   selectedDevice: string = '';
-  selectedRange: string = 'daily';
+  selectedRange: string = '';
   deviceData: any[] = [];
   deviceInfo: any = null;
   lineChart: Chart | null = null;
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchDevices();
-    setTimeout(() => this.initChart(), 500); // Ensure the chart is initialized after the DOM is ready
+    setTimeout(() => this.initChart(), 500);
   }
 
   ngOnDestroy(): void {
@@ -55,8 +55,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   generateReport() {
+    if (!this.selectedDevice && !this.selectedRange) {
+      alert('Please select a device type and a range.');
+      return;
+    }
+  
     if (!this.selectedDevice) {
-      alert('Please select a device.');
+      alert('Please select a device type.');
+      return;
+    }
+  
+    if (!this.selectedRange) {
+      alert('Please select a range.');
       return;
     }
 
@@ -69,7 +79,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (response.device_data?.length > 0) {
           this.deviceData = response.device_data;
           this.deviceInfo = response.device_info;
-          this.updateChart();
+
+          this.updateChartBasedOnRange();
           this.startLiveUpdates();
         } else {
           alert('No data available for the selected device and time range.');
@@ -98,11 +109,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.lineChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Initializing...'],
+        labels: [],
         datasets: [
           {
             label: 'Device Data',
-            data: [0],
+            data: [],
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             borderWidth: 2,
@@ -124,42 +135,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateChartBasedOnRange() {
+    if (!this.lineChart) return;
+
+    this.deviceData.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    if (this.selectedRange === 'daily') {
+      this.updateChart();
+    } else if (this.selectedRange === 'weekly') {
+      this.updateChartForWeekly();
+    } else if (this.selectedRange === 'monthly') {
+      this.updateChartForMonthly();
+    }
+  }
+
   updateChart() {
     if (!this.lineChart) return;
 
-    const recentData = this.deviceData.slice(-6);
-    const timestamps = recentData.map((data) => data.timestamp);
-    const values = recentData.map((data) => data.value);
+    const timestamps = this.deviceData.map((data) => {
+      return new Date(data.timestamp).toLocaleString(); 
+    });
 
-    const annotations: AnnotationOptions<'line'>[] = [];
+    const values = this.deviceData.map((data) => data.value);
 
-    const startFlowIndex = recentData.findIndex((data) => data.event === 'start_flow');
-    if (startFlowIndex !== -1) {
-      annotations.push({
-        type: 'line',
-        scaleID: 'x',
-        value: timestamps[startFlowIndex],
-        borderColor: 'red',
-        borderWidth: 2,
-        label: { content: 'Start Flow', display: true, position: 'start' },
-      });
-    }
-
-    const stopFlowIndex = recentData.findIndex((data) => data.event === 'stop_flow');
-    if (stopFlowIndex !== -1) {
-      annotations.push({
-        type: 'line',
-        scaleID: 'x',
-        value: timestamps[stopFlowIndex],
-        borderColor: 'blue',
-        borderWidth: 2,
-        label: { content: 'Stop Flow', display: true, position: 'start' },
-      });
-    }
-
-    this.lineChart.data.labels = timestamps;
+    this.lineChart.data.labels = timestamps; 
     this.lineChart.data.datasets[0].data = values;
-    (this.lineChart.options.plugins?.annotation as any).annotations = annotations;
     this.lineChart.update();
   }
 
@@ -176,7 +176,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.http.get(`${this.apiUrl}chart-data/`, { headers: this.getAuthHeaders(), params }).subscribe(
         (response: any) => {
           if (response.device_data?.length > 0) {
-            this.deviceData = response.device_data;
+            const newDeviceData = response.device_data;
+
+            this.deviceData = [...newDeviceData, ...this.deviceData].slice(0, 6); 
             this.updateChart();
           }
         },
@@ -184,6 +186,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
           console.error('Error fetching live data:', error);
         }
       );
-    }, 5000); // Refresh every 5 seconds
+    }, 600000); 
+  }
+
+  updateChartForWeekly() {
+    if (!this.lineChart) return;
+
+    const dayOfWeekData = this.deviceData.reduce((acc: any, data) => {
+      const date = new Date(data.timestamp);
+      const dayOfWeek = date.toLocaleString('default', { weekday: 'long' });
+
+      if (!acc[dayOfWeek]) {
+        acc[dayOfWeek] = { total: 0, count: 0 };
+      }
+      acc[dayOfWeek].total += data.value;
+      acc[dayOfWeek].count += 1;
+      return acc;
+    }, {});
+
+    const orderedDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const labels = orderedDays.filter(day => dayOfWeekData[day]);
+    const averageValues = labels.map(day => dayOfWeekData[day].total / dayOfWeekData[day].count);
+
+    this.lineChart.data.labels = labels; 
+    this.lineChart.data.datasets[0].data = averageValues;
+    this.lineChart.update();
+  }
+
+  updateChartForMonthly() {
+    if (!this.lineChart) return;
+
+    const monthlyData = this.deviceData.reduce((acc: any, data) => {
+      const date = new Date(data.timestamp);
+      const month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      if (!acc[month]) {
+        acc[month] = { total: 0, count: 0 };
+      }
+      acc[month].total += data.value;
+      acc[month].count += 1;
+      return acc;
+    }, {});
+
+    const months = Object.keys(monthlyData).sort((a, b) => {
+      return new Date(a).getTime() - new Date(b).getTime();
+    });
+    const averageValues = months.map((month) => monthlyData[month].total / monthlyData[month].count);
+
+    this.lineChart.data.labels = months;
+    this.lineChart.data.datasets[0].data = averageValues;
+    this.lineChart.update();
   }
 }

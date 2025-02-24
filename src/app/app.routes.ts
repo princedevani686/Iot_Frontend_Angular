@@ -47,7 +47,6 @@ export const routes: Routes = [
                 path: 'edit_device/:id',
                 component : EditDeviceComponent
             },
-            
         ]
     }
 ];

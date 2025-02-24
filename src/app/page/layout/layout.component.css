@@ -1,7 +1,8 @@
   
   #sidebar {
     position: fixed;
-    transition: all 0.3s ease;
+    left: 0;
+    transition: left 0.4s, transform 0.2s;
     box-shadow: 2px 0 5px rgba(84, 65, 168, 0.1);
     z-index: 1;
     background-color: #2c2e3a;
@@ -14,7 +15,7 @@
   
   #page-content-wrapper {
     margin-left: 210px; 
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.4s ease;
   }
   
   #page-content-wrapper.sidebar-active {
@@ -28,10 +29,11 @@
   #toggleSidebar {
  
     color: white;
-    padding: 21px;
+    padding: 20px;
     border: none;
-    font-size: 18px;
+    font-size: 21px;
     cursor: pointer;
+    /* transition: all 0.5s ease-in-out; */
     
   }
   
@@ -39,6 +41,10 @@
     transform: scale(1.1);
     opacity: 0.9; /* Smooth hover effect */
 
+  }
+
+  .userProfile{
+    margin: 10px;
   }
   
   @media (max-width: 768px) {
@@ -52,11 +58,12 @@
   
     #page-content-wrapper {
       margin-left: 0;
+      
     }
   
-    #page-content-wrapper.sidebar-active {
+    /* #page-content-wrapper.sidebar-active {
       margin-left: 210px;
-    }
+    } */
   }
   #sidebartitle{
     margin-bottom: 0;

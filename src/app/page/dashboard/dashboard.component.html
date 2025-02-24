@@ -10,8 +10,8 @@
             <div class="col-md-5 col-sm-12 mb-3">
               <div class="form-group">
                 <label for="deviceSelect">Select Device:</label>
-                <select id="deviceSelect" [(ngModel)]="selectedDevice" class="form-control">
-                  <option value="" disabled>Select a device</option>
+                <select id="deviceSelect" [(ngModel)]="selectedDevice" class="form-select">
+                  <option value="" disabled>Select Device Type</option>
                   <option *ngFor="let device of devices" [value]="device.id">{{ device.name }}</option>
                 </select>
               </div>
@@ -20,7 +20,8 @@
             <div class="col-md-5 col-sm-12 mb-3">
               <div class="form-group">
                 <label for="rangeSelect">Select Time Range:</label>
-                <select id="rangeSelect" [(ngModel)]="selectedRange" class="form-control">
+                <select id="rangeSelect" [(ngModel)]="selectedRange" class="form-select">
+                  <option value="" disabled>Select Range</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
@@ -32,6 +33,7 @@
               <button (click)="generateReport()" class="btn btn-primary w-100">Show Data</button>
             </div>
           </div>
+          
 
           <ng-template #noData>
             <p>No data available</p>
@@ -40,7 +42,6 @@
           <!-- Responsive Chart Container -->
           <div class="chart-container">
             <canvas id="lineChart"></canvas>
-            
           </div>
 
         </div>

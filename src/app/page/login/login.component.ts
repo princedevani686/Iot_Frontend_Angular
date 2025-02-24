@@ -13,10 +13,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  activeForm: 'login' | 'register' | 'forgot-password' = 'login'; // Add forgot-password as an option
+  activeForm: 'login' | 'register' | 'forgot-password' = 'login'; 
   registerObj: RegisterModel = new RegisterModel();
   loginObj: LoginModel = new LoginModel();
-  forgotObj: ForgotPasswordModel = new ForgotPasswordModel();
 
   constructor(
     private _snackbar: MatSnackBar,
@@ -24,21 +23,19 @@ export class LoginComponent {
     private _http: HttpClient
   ) {}
 
-  // Toggle between login, register, and forgot password forms
   toggleForm(form: 'login' | 'register' | 'forgot-password') {
     this.activeForm = form;
     if (form === 'forgot-password') {
-      // Navigate to the Forgot Password page
       this._router.navigate(['/forgot-password']);
     }
   }
 
-  // Register form submission
+  // Register form 
   registerForm() {
     this._http.post('http://localhost:8000/register/', this.registerObj).subscribe(
       () => {
         this._snackbar.open('Registration successful!', 'Close', { duration: 3000 });
-        this.toggleForm('login'); // Go back to login after successful registration
+        this.toggleForm('login'); 
       },
       (error) => {
         this._snackbar.open('Registration failed.', 'Close', { duration: 3000 });
@@ -47,7 +44,7 @@ export class LoginComponent {
     );
   }
 
-  // Login form submission
+  // Login form 
   loginForm() {
     if (!this.loginObj.email || !this.loginObj.password) {
       this._snackbar.open('Please enter email and password.', 'Close', { duration: 3000 });
@@ -57,12 +54,11 @@ export class LoginComponent {
     this._http.post('http://localhost:8000/login/', this.loginObj).subscribe(
       (response: any) => {
         if (response.access_token) {
-          // Store tokens and user data in localStorage
           localStorage.setItem('access_token', response.access_token);
           localStorage.setItem('refresh_token', response.refresh_token);
           localStorage.setItem('user', JSON.stringify(response.user));
           this._snackbar.open('Login successful!', 'Close', { duration: 3000 });
-          this._router.navigate(['/dashboard']); // Navigate to dashboard
+          this._router.navigate(['/dashboard']); 
         } else {
           this._snackbar.open('Unexpected error during login.', 'Close', { duration: 3000 });
         }
@@ -73,25 +69,6 @@ export class LoginComponent {
       }
     );
   }
-
-  // Forgot password form submission
-  forgotPassword() {
-    if (!this.forgotObj.email) {
-      this._snackbar.open('Please enter your email.', 'Close', { duration: 3000 });
-      return;
-    }
-
-    this._http.post('http://localhost:8000/forgot-password/', this.forgotObj).subscribe(
-      () => {
-        this._snackbar.open('Password reset email sent!', 'Close', { duration: 3000 });
-        this.toggleForm('login'); // Go back to login after resetting password
-      },
-      (error) => {
-        this._snackbar.open('Error sending reset email.', 'Close', { duration: 3000 });
-        console.error('Forgot Password error:', error);
-      }
-    );
-  }
 }
 
 // Register model
@@ -99,7 +76,7 @@ export class RegisterModel {
   username: string = '';
   email: string = '';
   password: string = '';
-  password2: string = ''; // Confirm password field
+  password2: string = ''; 
 }
 
 // Login model
@@ -108,7 +85,3 @@ export class LoginModel {
   password: string = '';
 }
 
-// Forgot password model
-export class ForgotPasswordModel {
-  email: string = '';
-}

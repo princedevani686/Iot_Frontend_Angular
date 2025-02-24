@@ -11,15 +11,16 @@
           <div class="row">
             <div class="col-12 col-md-5 mb-3">
               <label for="device">Select Device</label>
-              <select id="device" class="form-control" [(ngModel)]="selectedDevice">
-                <option value="" disabled>Select a device</option>
+              <select id="device" class="form-select" [(ngModel)]="selectedDevice">
+                <option value="" disabled>Select Device Type</option>
                 <option *ngFor="let device of devices" [value]="device.id">{{ device.name }}</option>
               </select>
             </div>
 
             <div class="col-12 col-md-5 mb-3">
-              <label for="range">Select Range</label>
-              <select id="range" class="form-control" [(ngModel)]="selectedRange">
+              <label for="range">Select Time Range</label>
+              <select id="range" class="form-select" [(ngModel)]="selectedRange">
+                <option value="" disabled>Select Range</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
@@ -37,7 +38,7 @@
         </div>
       </div>
       <div class="table-responsive mt-4 rounded-3" *ngIf="filteredData.length > 0">
-        <table class="table table-bordered text-center ">
+        <table class="table table-bordered text-center">
           <thead class="table-secondary">
             <tr>
               <th>Sr. No</th>
@@ -47,9 +48,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let data of filteredData; let i = index">
-              <td>{{ i + 1 }}</td> <!-- Sr. No. starts from 1 -->
-              <!-- <td>{{ data.device_id }}</td> -->
+            <tr *ngFor="let data of displayedData; let i = index">
+              <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
               <td>{{ data.type }}</td>
               <td>{{ data.value }}</td>
               <td>{{ data.timestamp | date: 'MMM d, y, h:mm:ss a' }}</td>
@@ -57,6 +57,25 @@
           </tbody>
         </table>
       </div>
+      
+      <!-- Pagination Controls -->
+      <nav *ngIf="totalPages > 1" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)">Previous</button>
+          </li>
+          <li
+            class="page-item"
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === i + 1"
+          >
+            <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(currentPage + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

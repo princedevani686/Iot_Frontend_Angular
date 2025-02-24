@@ -27,9 +27,9 @@ export class EditDeviceComponent implements OnInit {
     this.getDeviceDetails();
   }
 
-  // Fetch device details with authentication
+  // Fetch device 
   getDeviceDetails(): void {
-    const token = localStorage.getItem('access_token'); // Get JWT token
+    const token = localStorage.getItem('access_token'); 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.get(`${this.apiUrl}/${this.deviceId}/`, { headers }).subscribe({
@@ -43,20 +43,20 @@ export class EditDeviceComponent implements OnInit {
     });
   }
 
-  // Handle update device form submission
+  // update device 
   onUpdateDevice(): void {
-    if (!this.device.name || !this.device.type || !this.device.status) {
+    if (!this.device.name || !this.device.type) {
       alert('Please fill in all fields.');
       return;
     }
 
-    const token = localStorage.getItem('access_token'); // Get JWT token
+    const token = localStorage.getItem('access_token'); 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.patch(`${this.apiUrl}/${this.deviceId}/`, this.device, { headers }).subscribe({
       next: () => {
         alert('Device updated successfully!');
-        this.router.navigate(['/device']); // Redirect to devices list
+        this.router.navigate(['/device']); 
       },
       error: (err) => {
         console.error('Error updating device:', err);

@@ -17,7 +17,7 @@
 
             <div class="col-12 col-md-5 mb-3">
               <label for="status" class="form-label">Device Type</label>
-              <select class="form-control" id="status" [(ngModel)]="newDevice.type" name="deviceType" required>
+              <select class="form-select" id="status" [(ngModel)]="newDevice.type" name="deviceType" required>
                 <option value="" disabled selected> Select Device Type</option>
                 <option value="Temperature">Temperature</option>
                 <option value="Humidity">Humidity</option>
@@ -34,9 +34,9 @@
       </div>
     </div>
   </div>
-
+  <h3 class="text-center mt-4 fw-bold">Device List</h3>
   <!-- Device Table -->
-  <div class="table-responsive mt-5 rounded-3 border-3">
+  <div class="table-responsive mt-4 rounded-3 border-3">
 
     <table class="table table-bordered text-center ">
 

@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { FormsModule } from '@angular/forms'; // Correct import
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar'; // Optional
-import { HttpClient } from '@angular/common/http'; // Optional
+
 
 @Component({
   selector: 'app-forgot-password',
-  imports: [FormsModule, CommonModule, RouterModule], // Correct imports here
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css'],
 })
@@ -29,7 +28,7 @@ export class  ForgotPasswordComponent {
 
     this.loading = true;
     this.authService.forgotPassword(this.email).subscribe(
-      (response) => {
+      (response) => {  
         this.message = response.message;
         this.error = false;
         this.loading = false;

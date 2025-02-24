@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router'; // Import Router here
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-device',
-  imports: [CommonModule, FormsModule , RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './device.component.html',
   styleUrls: ['./device.component.css'],
 })
@@ -20,7 +20,7 @@ export class DeviceComponent implements OnInit {
     status: 'inactive',
   };
 
-  constructor(private http: HttpClient, private router: Router,private deviceService: AuthService ) {} // Inject Router here
+  constructor(private http: HttpClient, private router: Router, private deviceService: AuthService) { }
 
   ngOnInit(): void {
     this.getDevices();
@@ -28,21 +28,21 @@ export class DeviceComponent implements OnInit {
 
   // Fetch all devices
   getDevices() {
-    const token = localStorage.getItem('access_token'); // Get the stored access token
-  
+    const token = localStorage.getItem('access_token');
+
     if (!token) {
       alert('User not authenticated. Please log in.');
       return;
     }
-  
+
     this.http.get(
-      'http://127.0.0.1:8000/devices/', 
-      { 
-        headers: { Authorization: `Bearer ${token}` } // Include the token in the headers
+      'http://127.0.0.1:8000/devices/',
+      {
+        headers: { Authorization: `Bearer ${token}` }
       }
     ).subscribe(
       (data: any) => {
-        this.devices = data; // Assign the fetched devices
+        this.devices = data;
       },
       (error) => {
         console.error('Error fetching devices:', error);
@@ -52,110 +52,102 @@ export class DeviceComponent implements OnInit {
   }
 
   // Add a new device
-  // Add a new device with authentication
-addDevice() {
-  const token = localStorage.getItem('access_token'); // Get the stored access token
+  addDevice() {
+    const token = localStorage.getItem('access_token');
 
-  if (!token) {
-    alert('User not authenticated. Please log in.');
-    return;
-  }
-
-  this.http.post(
-    'http://127.0.0.1:8000/devices/',
-    this.newDevice,
-    {
-      headers: { Authorization: `Bearer ${token}` } // Include the token in the headers
-    }
-  ).subscribe(
-    (data: any) => {
-      this.devices.push(data); // Add to the devices array
-      this.newDevice = { name: '', type: '', status: 'inactive' }; // Reset form
-    },
-    (error) => {
-      console.error('Error adding device:', error);
-      alert('Failed to add device: ' + (error.error?.detail || 'Unknown error'));
-    }
-  );
-}
-
-  // Toggle device status
-// Component
-loadingStates: { [key: number]: boolean } = {}; // Loading states for each device
-intervals: { [key: number]: any } = {}; // Store intervals for each device
-
-toggleDeviceStatus(device: any) {
-  this.loadingStates[device.id] = true; // Start loading state
-  const updatedStatus = device.status === 'active' ? 'inactive' : 'active'; // Toggle status
-
-  this.http.patch(`http://127.0.0.1:8000/devices/${device.id}/status/`, {
-    status: updatedStatus,
-  }).subscribe({
-    next: () => {
-      device.status = updatedStatus; // Update the status in the UI
-      this.loadingStates[device.id] = false; // Stop loading state
-
-      if (updatedStatus === 'active') {
-        // Start simulation if status is inactive
-        this.startDataSimulation(device.id, device.type.toLowerCase());
-      } else {
-        // Stop simulation if status is active
-        this.stopDataSimulation(device.id);
-      }
-    },
-    error: (error) => {
-      this.loadingStates[device.id] = false; // Stop loading state
-      console.error('Error:', error);
-      alert(`Failed to update status: ${error.error?.error || 'Unknown error'}`);
-    }
-  });
-}
-
-startDataSimulation(deviceId: number, dataType: string) {
-  // Clear any existing interval for the device
-  this.stopDataSimulation(deviceId);
-
-  // Start a new interval for continuous simulation
-  this.intervals[deviceId] = setInterval(() => {
-    this.http.post(`http://127.0.0.1:8000/device_data/`, {
-      device_id: deviceId,
-      type: dataType,
-    }).subscribe({
-      next: () => {
-        console.log(`Simulated ${dataType} data for device ${deviceId}`);
-      },
-      error: (err) => {
-        console.error('Simulation error:', err);
-        alert(`Simulation failed: ${err.error?.error || 'Check device status'}`);
-      }
-    });
-  }, 10000); // Generate data every 10 seconds
-}
-
-stopDataSimulation(deviceId: number) {
-  if (this.intervals[deviceId]) {
-    clearInterval(this.intervals[deviceId]); // Clear the interval
-    delete this.intervals[deviceId]; // Remove the reference
-    console.log(`Stopped data simulation for device ${deviceId}`);
-  }
-}
-
- 
-  // Delete a device
-  deleteDevice(deviceId: number): void {
-    const token = localStorage.getItem('access_token'); // Get the stored access token
     if (!token) {
       alert('User not authenticated. Please log in.');
       return;
     }
-  
-    // Use the correct endpoint URL
+
+    this.http.post(
+      'http://127.0.0.1:8000/devices/',
+      this.newDevice,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    ).subscribe(
+      (data: any) => {
+        this.devices.push(data);
+        this.newDevice = { name: '', type: '', status: 'inactive' };
+      },
+      (error) => {
+        console.error('Error adding device:', error);
+        alert('Failed to add device: ' + (error.error?.detail || 'Unknown error'));
+      }
+    );
+  }
+
+
+  loadingStates: { [key: number]: boolean } = {};
+  intervals: { [key: number]: any } = {};
+
+  toggleDeviceStatus(device: any) {
+    this.loadingStates[device.id] = true;
+    const updatedStatus = device.status === 'active' ? 'inactive' : 'active';
+
+    this.http.patch(`http://127.0.0.1:8000/devices/${device.id}/status/`, {
+      status: updatedStatus,
+    }).subscribe({
+      next: () => {
+        device.status = updatedStatus;
+        this.loadingStates[device.id] = false;
+
+        if (updatedStatus === 'active') {
+          this.startDataSimulation(device.id, device.type.toLowerCase());
+        } else {
+          this.stopDataSimulation(device.id); 
+        }
+      },
+      error: (error) => {
+        this.loadingStates[device.id] = false;
+        console.error('Error:', error);
+        alert(`Failed to update status: ${error.error?.error || 'Unknown error'}`);
+      }
+    });
+  }
+
+  startDataSimulation(deviceId: number, dataType: string) {
+    this.stopDataSimulation(deviceId); 
+
+    this.intervals[deviceId] = setInterval(() => {
+      this.http.post(`http://127.0.0.1:8000/device_data/`, {
+        device_id: deviceId,
+        type: dataType,
+      }).subscribe({
+        next: () => {
+          console.log(`Simulated ${dataType} data for device ${deviceId}`);
+        },
+        error: (err) => {
+          console.error('Simulation error:', err);
+          alert(`Simulation failed: ${err.error?.error || 'Check device status'}`);
+        }
+      });
+    }, 60000);  
+  }
+  stopDataSimulation(deviceId: number) {
+    if (this.intervals[deviceId]) {
+      clearInterval(this.intervals[deviceId]);
+      delete this.intervals[deviceId];
+      console.log(`Stopped data simulation for device ${deviceId}`);
+    }
+  }
+
+
+
+  // Delete a device
+  deleteDevice(deviceId: number): void {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      alert('User not authenticated. Please log in.');
+      return;
+    }
+
     this.http.delete(
-      `http://127.0.0.1:8000/devices/${deviceId}/`,  // Correct URL endpoint for deleting device
+      `http://127.0.0.1:8000/devices/${deviceId}/`,
       { headers: { Authorization: `Bearer ${token}` } }
     ).subscribe(
       () => {
-        // Remove the device from the list after deletion
         this.devices = this.devices.filter((device) => device.id !== deviceId);
         alert('Device deleted successfully.');
       },

@@ -95,24 +95,4 @@
     <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
   </form>
 
-  <!-- Forgot Password Form -->
-  <form *ngIf="activeForm === 'forgot-password'" (ngSubmit)="forgotPassword()" class="form card p-4 shadow">
-    <h2 class="text-center">Forgot Password</h2>
-    <div class="form-group">
-      <label for="forgot-email">Enter your email</label>
-      <input 
-        type="email" 
-        id="forgot-email" 
-        [(ngModel)]="forgotObj.email" 
-        name="forgotEmail" 
-        class="form-control"
-        required 
-        placeholder="Enter your email">
-    </div>
-    <button type="submit" class="btn btn-primary w-100 mt-3">Reset Password</button>
-    <p class="mt-2 text-center">
-      Remembered your password? 
-      <a class="text-primary" (click)="toggleForm('login')">Login here</a>
-    </p>
-  </form>
 </div>

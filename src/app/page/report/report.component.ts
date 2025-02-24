@@ -16,11 +16,16 @@ import 'jspdf-autotable';
 export class ReportComponent implements OnInit {
   devices: any[] = [];
   filteredData: any[] = [];
+  displayedData: any[] = []; 
   selectedDevice: string = '';
-  selectedRange: string = 'daily';
+  selectedRange: string = '';
   dataFetched: boolean = false;
-  isReportGenerated = false; // Initially false
+  isReportGenerated = false;
   apiUrl = 'http://127.0.0.1:8000/api/devices/';
+
+  currentPage: number = 1; 
+  itemsPerPage: number = 15;  
+  totalPages: number = 0; 
 
   constructor(private http: HttpClient) {}
 
@@ -28,13 +33,11 @@ export class ReportComponent implements OnInit {
     this.fetchDevices();
   }
 
-  // Function to get auth headers
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('access_token'); // Retrieve JWT token
+    const token = localStorage.getItem('access_token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // Fetch all devices with authentication
   fetchDevices() {
     this.http.get(this.apiUrl, { headers: this.getAuthHeaders() }).subscribe(
       (data: any) => {
@@ -47,13 +50,21 @@ export class ReportComponent implements OnInit {
     );
   }
 
-  // Generate report based on selected device and range
   generateReport() {
-    if (!this.selectedDevice) {
-      alert('Please select a device.');
+    if (!this.selectedDevice && !this.selectedRange) {
+      alert('Please select a device type and a range.');
       return;
     }
 
+    if (!this.selectedDevice) {
+      alert('Please select a device type.');
+      return;
+    }
+
+    if (!this.selectedRange) {
+      alert('Please select a range.');
+      return;
+    }
     const params = new HttpParams()
       .set('device_id', this.selectedDevice)
       .set('range', this.selectedRange);
@@ -62,39 +73,56 @@ export class ReportComponent implements OnInit {
       (data: any) => {
         this.filteredData = data.filtered_devices;
         this.dataFetched = true;
-        this.isReportGenerated = this.filteredData.length > 0; // Show download buttons only if data is present
-
+        this.isReportGenerated = this.filteredData.length > 0;
+        this.setupPagination();
       },
       (error) => {
         console.error('Error filtering devices:', error);
         alert('Failed to fetch data. Please try again later.');
-        this.dataFetched = true; // Show "no data" message
+        this.dataFetched = true;
       }
     );
   }
 
+  setupPagination() {
+    this.currentPage = 1;
+    this.totalPages = Math.ceil(this.filteredData.length / this.itemsPerPage);
+    this.updateDisplayedData();
+  }
+
+  updateDisplayedData() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.displayedData = this.filteredData.slice(start, end);
+  }
+
+  goToPage(page: number) {
+    if (page > 0 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updateDisplayedData();
+    }
+  }
+
+
 
   // Download CSV file
-  // Download CSV file with Sr. No.
 downloadCSV() {
   if (this.filteredData.length === 0) {
     alert('No data available to download.');
     return;
   }
 
-  // Add 'Sr. No.' as the first column
-  const headers = ['Sr. No.', 'Device ID', 'Type', 'Value', 'Timestamp'];
+  const headers = ['Sr. No.',  'Type', 'Value', 'Timestamp'];
   const rows = this.filteredData.map((device, index) => [
-    index + 1,  // Sr. No.
-    device.device_id,
+    index + 1,  
     device.type,
     device.value,
     new Date(device.timestamp).toLocaleString()
   ]);
 
   const csvContent = [
-    headers.join(','), // Headers
-    ...rows.map(row => row.map(value => `"${value?.toString().replace(/"/g, '""')}"`).join(',')) // Data
+    headers.join(','), 
+    ...rows.map(row => row.map(value => `"${value?.toString().replace(/"/g, '""')}"`).join(',')) 
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -102,7 +130,7 @@ downloadCSV() {
 }
 
 
-  // Download PDF file with Sr. No.
+  // Download PDF file 
 downloadPDF() {
   if (this.filteredData.length === 0) {
     alert('No data available to download.');
@@ -110,10 +138,9 @@ downloadPDF() {
   }
 
   const doc = new jsPDF();
-  const headers = ['Sr. No.', 'Device ID', 'Type', 'Value', 'Timestamp'];
+  const headers = ['Sr. No.', 'Type', 'Value', 'Timestamp'];
   const tableRows = this.filteredData.map((device, index) => [
-    index + 1,  // Sr. No.
-    device.device_id,
+    index + 1, 
     device.type,
     device.value,
     new Date(device.timestamp).toLocaleString()
